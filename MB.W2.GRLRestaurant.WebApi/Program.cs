@@ -1,4 +1,7 @@
 
+using MB.W2.GRLRestaurant.EFCore;
+using Microsoft.EntityFrameworkCore;
+
 namespace MB.W2.GRLRestaurant.WebApi
 {
     public class Program
@@ -14,6 +17,11 @@ namespace MB.W2.GRLRestaurant.WebApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+            //###################################################
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
