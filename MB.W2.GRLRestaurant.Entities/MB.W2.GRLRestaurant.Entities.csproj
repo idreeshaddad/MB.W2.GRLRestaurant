@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MB.W2.GRLRestaurant.Utils\MB.W2.GRLRestaurant.Utils.csproj" />
+  </ItemGroup>
+
 </Project>

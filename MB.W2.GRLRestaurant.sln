@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MB.W2.GRLRestaurant.Entitie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MB.W2.GRLRestaurant.EFCore", "MB.W2.GRLRestaurant.EFCore\MB.W2.GRLRestaurant.EFCore.csproj", "{CBE18890-BE5E-4FBB-B1DA-020BD65135EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MB.W2.GRLRestaurant.Dtos", "MB.W2.GRLRestaurant.Dtos\MB.W2.GRLRestaurant.Dtos.csproj", "{13304A1F-81A9-42AA-8A63-05C581366C64}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MB.W2.GRLRestaurant.Dtos", "MB.W2.GRLRestaurant.Dtos\MB.W2.GRLRestaurant.Dtos.csproj", "{13304A1F-81A9-42AA-8A63-05C581366C64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MB.W2.GRLRestaurant.Utils", "MB.W2.GRLRestaurant.Utils\MB.W2.GRLRestaurant.Utils.csproj", "{C0A89C21-9C79-46F2-AE6A-DACC5EF81C54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{13304A1F-81A9-42AA-8A63-05C581366C64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13304A1F-81A9-42AA-8A63-05C581366C64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13304A1F-81A9-42AA-8A63-05C581366C64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0A89C21-9C79-46F2-AE6A-DACC5EF81C54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0A89C21-9C79-46F2-AE6A-DACC5EF81C54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0A89C21-9C79-46F2-AE6A-DACC5EF81C54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0A89C21-9C79-46F2-AE6A-DACC5EF81C54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
