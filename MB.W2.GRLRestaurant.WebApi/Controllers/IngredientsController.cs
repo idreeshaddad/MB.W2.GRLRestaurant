@@ -53,13 +53,16 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditIngredient(int id, Ingredient ingredient)
+        public async Task<IActionResult> EditIngredient(int id, IngredientDto ingredientDto)
         {
-            if (id != ingredient.Id)
+            if (id != ingredientDto.Id)
             {
                 return BadRequest();
             }
 
+            var ingredient = _mapper.Map<Ingredient>(ingredientDto);
+            
+            //_context.Update(ingredient);
             _context.Entry(ingredient).State = EntityState.Modified;
 
             try
