@@ -87,7 +87,7 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Customer>> CreateCustomer(CustomerDto customerDto)
+        public async Task<ActionResult<CustomerDto>> CreateCustomer(CustomerDto customerDto)
         {
             var customer = _mapper.Map<Customer>(customerDto);
 
