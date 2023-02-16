@@ -55,13 +55,16 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditCustomer(int id, Customer customer)
+        public async Task<IActionResult> EditCustomer(int id, CustomerDto customerDto)
         {
-            if (id != customer.Id)
+            if (id != customerDto.Id)
             {
                 return BadRequest();
             }
 
+            var customer = _mapper.Map<Customer>(customerDto);
+
+            // _context.Update(customer);
             _context.Entry(customer).State = EntityState.Modified;
 
             try
@@ -97,11 +100,8 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
-            if (_context.Customers == null)
-            {
-                return NotFound();
-            }
             var customer = await _context.Customers.FindAsync(id);
+
             if (customer == null)
             {
                 return NotFound();
