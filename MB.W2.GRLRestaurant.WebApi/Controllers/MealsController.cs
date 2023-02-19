@@ -4,6 +4,7 @@ using MB.W2.GRLRestaurant.EFCore;
 using MB.W2.GRLRestaurant.Entities;
 using AutoMapper;
 using MB.W2.GRLRestaurant.Dtos.Meals;
+using System.Composition;
 
 namespace MB.W2.GRLRestaurant.WebApi.Controllers
 {
@@ -55,18 +56,27 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditMeal(int id, Meal meal)
+        public async Task<IActionResult> EditMeal(int id, MealDto mealDto)
         {
-            if (id != meal.Id)
+            if (id != mealDto.Id)
             {
                 return BadRequest();
             }
 
+            var meal = _mapper.Map<Meal>(mealDto);
+
+            //_context.Update(meal);
             _context.Entry(meal).State = EntityState.Modified;
 
             try
             {
                 await _context.SaveChangesAsync();
+
+                //if (mealDto.IngredientIds.Count > 0)
+                //{
+                //    await UpdateMealIngredients(mealDto.IngredientIds, mealDto.Id);
+                //    await _context.SaveChangesAsync();
+                //}
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -83,6 +93,17 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
 
             return NoContent();
         }
+
+        //private Task UpdateMealIngredients(List<int> ingredientIds, int id)
+        //{
+        //    // Load the meal including the ingredients
+
+        //    // Clear meal ingredients 
+
+        //    // Get ingredients List from DB vai ingredientIds
+
+        //    // meal.Ingredients.AddRange(ingredients);
+        //}
 
         [HttpPost]
         public async Task<ActionResult<MealDto>> CreateMeal(MealDto mealDto)
