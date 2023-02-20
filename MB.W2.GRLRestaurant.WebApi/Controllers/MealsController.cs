@@ -72,11 +72,11 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
             {
                 await _context.SaveChangesAsync();
 
-                //if (mealDto.IngredientIds.Count > 0)
-                //{
-                //    await UpdateMealIngredients(mealDto.IngredientIds, mealDto.Id);
-                //    await _context.SaveChangesAsync();
-                //}
+                if (mealDto.IngredientIds.Count > 0)
+                {
+                    await UpdateMealIngredients(mealDto.IngredientIds, mealDto.Id);
+                    await _context.SaveChangesAsync();
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -93,17 +93,6 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
 
             return NoContent();
         }
-
-        //private Task UpdateMealIngredients(List<int> ingredientIds, int id)
-        //{
-        //    // Load the meal including the ingredients
-
-        //    // Clear meal ingredients 
-
-        //    // Get ingredients List from DB vai ingredientIds
-
-        //    // meal.Ingredients.AddRange(ingredients);
-        //}
 
         [HttpPost]
         public async Task<ActionResult<MealDto>> CreateMeal(MealDto mealDto)
@@ -126,11 +115,8 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMeal(int id)
         {
-            if (_context.Meals == null)
-            {
-                return NotFound();
-            }
             var meal = await _context.Meals.FindAsync(id);
+
             if (meal == null)
             {
                 return NotFound();
@@ -157,6 +143,26 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
                                     .Ingredients
                                     .Where(i => ingredientIds.Contains(i.Id))
                                     .ToListAsync();
+
+            meal.Ingredients.AddRange(ingredients);
+        }
+
+        private async Task UpdateMealIngredients(List<int> ingredientIds, int mealId)
+        {
+            // Load the meal including the ingredients
+            var meal = await _context
+                            .Meals
+                            .Include(meal => meal.Ingredients)
+                            .SingleAsync(meal => meal.Id == mealId);
+
+            // Clear meal ingredients 
+            meal.Ingredients.Clear();
+
+            // Get ingredients List from DB vai ingredientIds
+            var ingredients = await _context
+                                        .Ingredients
+                                        .Where(ing => ingredientIds.Contains(ing.Id))
+                                        .ToListAsync();
 
             meal.Ingredients.AddRange(ingredients);
         }
