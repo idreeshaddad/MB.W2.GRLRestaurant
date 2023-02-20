@@ -9,7 +9,7 @@
 
         public int Id { get; set; }
         public double TotalPrice { get; set; }
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
         public bool IsPaid { get; set; }
         public DateTime OrderDate { get; set; }
 
