@@ -15,7 +15,7 @@ namespace MB.W2.GRLRestaurant.Dtos.Orders
 
         public int Id { get; set; }
         public string? Notes { get; set; }
-        public bool IsPaid { get; set; }
+        public bool IsPaid { get; set; } = false;
 
 
         public int CustomerId { get; set; }

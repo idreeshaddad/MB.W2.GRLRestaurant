@@ -7,5 +7,6 @@
         public bool IsPaid { get; set; }
         public string CustomerFullName { get; set; }
         public DateTime OrderDate { get; set; }
+        public double TotalPrice { get; set; }
     }
 }

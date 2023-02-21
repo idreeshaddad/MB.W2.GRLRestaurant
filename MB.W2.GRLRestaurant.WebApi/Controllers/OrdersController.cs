@@ -28,7 +28,10 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderListDto>>> GetOrders()
         {
-            var orders = await _context.Orders.ToListAsync();
+            var orders = await _context
+                                    .Orders
+                                    .Include(order => order.Customer)
+                                    .ToListAsync();
 
             var orderDtos = _mapper.Map<List<OrderListDto>>(orders);
 
@@ -36,35 +39,63 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrder(int id)
+        public async Task<ActionResult<OrderDetailsDto>> GetOrder(int id)
         {
-            if (_context.Orders == null)
-            {
-                return NotFound();
-            }
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context
+                                .Orders
+                                .Include(order => order.Customer)
+                                .Include(order => order.Meals)
+                                    .ThenInclude(meal => meal.Ingredients)
+                                .SingleOrDefaultAsync(order => order.Id == id);
 
             if (order == null)
             {
                 return NotFound();
             }
 
-            return order;
+            var orderDto = _mapper.Map<OrderDetailsDto>(order);
+
+            return orderDto;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Order>> CreateOrder(OrderDto orderDto)
+        {
+            var order = _mapper.Map<Order>(orderDto);
+
+            await AddMealsToOrder(orderDto.MealIds, order);
+
+            order.TotalPrice = GetOrderTotalPrice(order.Meals);
+
+            order.OrderDate = DateTime.Now;
+
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            return Ok(order.Id);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditOrder(int id, Order order)
+        public async Task<IActionResult> EditOrder(int id, OrderDto orderDto)
         {
-            if (id != order.Id)
+            if (id != orderDto.Id)
             {
                 return BadRequest();
             }
+
+            var order = _mapper.Map<Order>(orderDto);
+
+            order.TotalPrice = GetOrderTotalPrice(order.Meals);
 
             _context.Entry(order).State = EntityState.Modified;
 
             try
             {
                 await _context.SaveChangesAsync();
+
+                await UpdateOrderMeals(orderDto.MealIds, order.Id);
+                await _context.SaveChangesAsync();
+
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -81,27 +112,11 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
             return NoContent();
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Order>> CreateOrder(Order order)
-        {
-            if (_context.Orders == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Orders'  is null.");
-            }
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetOrder", new { id = order.Id }, order);
-        }
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
-            if (_context.Orders == null)
-            {
-                return NotFound();
-            }
             var order = await _context.Orders.FindAsync(id);
+            
             if (order == null)
             {
                 return NotFound();
@@ -120,7 +135,24 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
         private bool OrderExists(int id)
         {
             return (_context.Orders?.Any(e => e.Id == id)).GetValueOrDefault();
-        } 
+        }
+
+        private async Task AddMealsToOrder(List<int> mealIds, Order order)
+        {
+            var meals = await _context.Meals.Where(meal => mealIds.Contains(meal.Id)).ToListAsync();
+            
+            order.Meals.AddRange(meals); 
+        }
+
+        private double GetOrderTotalPrice(List<Meal> meals)
+        {
+            return meals.Sum(meal => meal.Price);
+        }
+
+        private Task UpdateOrderMeals(List<int> mealIds, int id)
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion
     }
