@@ -85,7 +85,7 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
 
             var order = _mapper.Map<Order>(orderDto);
 
-            order.TotalPrice = GetOrderTotalPrice(order.Meals);
+            order.OrderDate = await GetOrderDateAsync(order.Id);
 
             _context.Entry(order).State = EntityState.Modified;
 
@@ -94,6 +94,9 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
                 await _context.SaveChangesAsync();
 
                 await UpdateOrderMeals(orderDto.MealIds, order.Id);
+
+                order.TotalPrice = GetOrderTotalPrice(order.Meals);
+
                 await _context.SaveChangesAsync();
 
             }
@@ -128,6 +131,17 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
             return NoContent();
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> DeleteOrders()
+        {
+            var orders = await _context.Orders.ToListAsync();
+
+            _context.Orders.RemoveRange(orders);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         #endregion
 
         #region Private Methods
@@ -149,9 +163,30 @@ namespace MB.W2.GRLRestaurant.WebApi.Controllers
             return meals.Sum(meal => meal.Price);
         }
 
-        private Task UpdateOrderMeals(List<int> mealIds, int id)
+        private async Task UpdateOrderMeals(List<int> mealIds, int orderId)
         {
-            throw new NotImplementedException();
+            var order = await _context
+                             .Orders
+                             .Include(o => o.Meals)
+                             .SingleAsync(o => o.Id == orderId);
+
+            order.Meals.Clear();
+
+            var meals = await _context
+                            .Meals
+                            .Where(m => mealIds.Contains(m.Id))
+                            .ToListAsync();
+
+            order.Meals.AddRange(meals);
+        }
+
+        private async Task<DateTime> GetOrderDateAsync(int id)
+        {
+            return await _context
+                                .Orders
+                                .Where(o => o.Id == id)
+                                .Select(o => o.OrderDate)
+                                .SingleAsync();
         }
 
         #endregion
